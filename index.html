@@ -1,0 +1,2462 @@
+<!-- 💰 Business Model
+
+Commission per booking (like Swiggy/Uber).
+
+Premium membership for providers (higher visibility, leads).
+
+Ads (local businesses promote themselves).
+
+🚀 Growth Strategy
+
+Start with one category (e.g., home services or tuition).
+
+Nail it → gain trust → expand categories.
+
+Partner with local shops (hardware, tuition centers, veterinary).
+
+Scale city by city (like how Zomato/Swiggy scaled).
+
+🔮 Long-Term Vision
+
+AI chatbot that acts like a personal assistant:
+“Hey app, my fridge is broken, send someone today.”
+
+Expand to rural areas where service discovery is even harder.
+
+Integrate with e-commerce (buy parts, medicines, etc. directly in app).
+
+✅ This idea has high success probability because:
+
+Market already exists (UrbanClap, JustDial proved demand).
+
+Problem is universal.
+
+You can start small (MVP in 1 city).
+
+Easy monetization. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalConnect - Find Trusted Local Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .service-card { transition: all 0.3s ease; }
+        .service-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .search-input { transition: all 0.3s ease; }
+        .search-input:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .login-input { transition: all 0.3s ease; }
+        .login-input:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); border-color: #667eea; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .notification-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .profile-filter-btn { color: #6b7280; }
+        .profile-filter-btn.active { background-color: #3b82f6; color: white; }
+        .profile-filter-btn:hover:not(.active) { background-color: #e5e7eb; }
+        
+        /* Responsive design improvements */
+        @media (max-width: 768px) {
+            .container { padding-left: 1rem; padding-right: 1rem; }
+            .grid { gap: 1rem; }
+            .text-4xl { font-size: 2rem; }
+            .text-3xl { font-size: 1.5rem; }
+            .text-2xl { font-size: 1.25rem; }
+            .px-6 { padding-left: 1rem; padding-right: 1rem; }
+            .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+            .space-x-4 > * + * { margin-left: 0.5rem; }
+            .max-w-2xl { max-width: 100%; }
+            .max-w-4xl { max-width: 100%; }
+        }
+        
+        @media (max-width: 640px) {
+            .grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .md\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .lg\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md\:grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .lg\:grid-cols-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .flex-col { flex-direction: column; }
+            .space-x-2 > * + * { margin-left: 0; margin-top: 0.5rem; }
+            .space-x-3 > * + * { margin-left: 0; margin-top: 0.5rem; }
+            .space-x-4 > * + * { margin-left: 0; margin-top: 0.5rem; }
+        }
+        
+        /* Icon hover effects */
+        .icon-btn { 
+            transition: all 0.3s ease; 
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        .icon-btn:hover { 
+            transform: scale(1.1); 
+            background-color: rgba(59, 130, 246, 0.1);
+            border-radius: 0.5rem;
+        }
+        .icon-btn:active { transform: scale(0.95); }
+        
+        /* Close button styles */
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: #6b7280;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+            color: #374151;
+            transform: scale(1.1);
+        }
+        .close-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Modal responsive styles */
+        .modal-content {
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 640px) {
+            .close-btn {
+                top: 0.5rem;
+                right: 0.5rem;
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Notification animation */
+        .notification-shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        /* Responsive button styles */
+        .btn-responsive {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            text-decoration: none;
+        }
+        
+        .btn-responsive:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-responsive:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 640px) {
+            .btn-responsive {
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
+                min-height: 40px;
+            }
+        }
+        
+        /* Back button styles */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Customer Login Page -->
+    <div id="loginPage" class="min-h-screen gradient-bg flex items-center justify-center px-6">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🔗</span>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome to LocalConnect</h1>
+                <p class="text-gray-600">Join thousands finding trusted local services</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input 
+                        type="text" 
+                        id="userName"
+                        required
+                        placeholder="Enter your full name"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="userEmail"
+                        required
+                        placeholder="Enter your email"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="userPhone"
+                        required
+                        placeholder="Enter your phone number"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <input 
+                        type="text" 
+                        id="userLocation"
+                        required
+                        placeholder="Enter your city/area"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+                >
+                    Get Started
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <button 
+                    onclick="showProviderRegistration()"
+                    class="text-blue-600 hover:text-blue-700 font-medium underline mb-4 transition-colors duration-300 px-4 py-2 rounded-lg hover:bg-blue-50"
+                >
+                    Join as Service Provider →
+                </button>
+                <p class="text-sm text-gray-500">
+                    By continuing, you agree to our 
+                    <a href="#" class="text-blue-600 hover:underline">Terms of Service</a> and 
+                    <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Provider Registration Page -->
+    <div id="providerRegistrationPage" class="min-h-screen gradient-bg flex items-center justify-center px-6 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl fade-in">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-3xl">🛠️</span>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Join as Service Provider</h1>
+                <p class="text-gray-600">Connect with customers in your area and grow your business</p>
+            </div>
+            
+            <form id="providerForm" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="providerName"
+                            required
+                            placeholder="Enter your full name"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                        <input 
+                            type="text" 
+                            id="businessName"
+                            required
+                            placeholder="Your business/service name"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="providerEmail"
+                            required
+                            placeholder="Enter your email"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input 
+                            type="tel" 
+                            id="providerPhone"
+                            required
+                            placeholder="Enter your phone number"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Service Category</label>
+                    <select 
+                        id="serviceCategory"
+                        required
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                        <option value="">Select your service category</option>
+                        <option value="plumber">Plumber</option>
+                        <option value="electrician">Electrician</option>
+                        <option value="tutor">Tutor/Teacher</option>
+                        <option value="vet">Pet Doctor/Veterinarian</option>
+                        <option value="cleaner">Cleaning Service</option>
+                        <option value="delivery">Delivery Service</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Location/Service Area</label>
+                    <input 
+                        type="text" 
+                        id="providerLocation"
+                        required
+                        placeholder="Enter your city/area where you provide services"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Experience (Years)</label>
+                        <input 
+                            type="number" 
+                            id="experience"
+                            required
+                            min="0"
+                            placeholder="Years of experience"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate (₹)</label>
+                        <input 
+                            type="number" 
+                            id="hourlyRate"
+                            required
+                            min="0"
+                            placeholder="Your hourly rate"
+                            class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                        >
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Specialties</label>
+                    <input 
+                        type="text" 
+                        id="specialties"
+                        required
+                        placeholder="e.g., Emergency repairs, AC installation, Math tutoring (separate with commas)"
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Availability</label>
+                    <select 
+                        id="availability"
+                        required
+                        class="login-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-0"
+                    >
+                        <option value="">Select your availability</option>
+                        <option value="Available now">Available now</option>
+                        <option value="Available today">Available today</option>
+                        <option value="Available tomorrow">Available tomorrow</option>
+                        <option value="Available this week">Available this week</option>
+                        <option value="By appointment">By appointment only</option>
+                    </select>
+                </div>
+                
+                <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+                >
+                    Register as Provider
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <button 
+                    onclick="showCustomerLogin()"
+                    class="text-blue-600 hover:text-blue-700 font-medium underline transition-colors duration-300 px-4 py-2 rounded-lg hover:bg-blue-50"
+                >
+                    ← Back to Customer Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Provider Dashboard -->
+    <div id="providerDashboard" class="hidden min-h-screen bg-gray-50">
+        <!-- Provider Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="container mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl text-white">🛠️</span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Provider Dashboard</h1>
+                            <p class="text-sm text-gray-600" id="providerWelcome"></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 md:space-x-4">
+                        <button onclick="showProviderNotifications()" class="icon-btn p-2 text-gray-600 hover:text-gray-800 relative">
+                            <span class="text-xl">🔔</span>
+                            <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center notification-badge hidden">0</span>
+                        </button>
+                        <button onclick="showProviderSettings()" class="icon-btn p-2 text-gray-600 hover:text-gray-800">
+                            <span class="text-xl">⚙️</span>
+                        </button>
+                        <button onclick="showProviderHelp()" class="icon-btn p-2 text-gray-600 hover:text-gray-800">
+                            <span class="text-xl">❓</span>
+                        </button>
+                        <button onclick="providerLogout()" class="bg-gray-100 hover:bg-gray-200 px-2 md:px-4 py-2 rounded-lg transition-colors text-gray-700 text-sm md:text-base">
+                            <span class="md:hidden">🚪</span>
+                            <span class="hidden md:inline">Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="container mx-auto px-6 py-8">
+            <!-- Stats Cards -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Total Bookings</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalBookings">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">📅</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Pending Requests</p>
+                            <p class="text-2xl font-bold text-orange-600" id="pendingRequests">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">⏳</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Monthly Earnings</p>
+                            <p class="text-2xl font-bold text-green-600" id="monthlyEarnings">₹0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">💰</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600">Rating</p>
+                            <p class="text-2xl font-bold text-yellow-600" id="providerRating">0.0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl">⭐</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Booking Requests -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold text-gray-800">Recent Booking Requests</h3>
+                        </div>
+                        <div id="bookingRequests" class="p-6">
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="text-4xl mb-2">📋</div>
+                                <p>No booking requests yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Summary -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Profile Summary</h3>
+                        <div id="profileSummary" class="space-y-3">
+                            <!-- Profile details will be populated here -->
+                        </div>
+                        <button onclick="editProfile()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                            Edit Profile
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="updateAvailability()" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Update Availability
+                            </button>
+                            <button onclick="viewEarnings()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                View Earnings
+                            </button>
+                            <button onclick="manageServices()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Manage Services
+                            </button>
+                            <button onclick="manageBusinessProfile()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Business Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Customer App -->
+    <div id="mainApp" class="hidden">
+    <!-- Header -->
+    <header class="gradient-bg text-white">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">🔗</span>
+                    </div>
+                    <h1 class="text-2xl font-bold">LocalConnect</h1>
+                </div>
+                <div class="flex items-center space-x-2 md:space-x-4">
+                    <button onclick="showNotifications()" class="icon-btn p-2 text-white/80 hover:text-white relative">
+                        <span class="text-xl">🔔</span>
+                        <span id="userNotificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center notification-badge hidden">0</span>
+                    </button>
+                    <button onclick="showUserProfile()" class="icon-btn p-2 text-white/80 hover:text-white">
+                        <span class="text-xl">👤</span>
+                    </button>
+                    <span id="userGreeting" class="text-white/90 hidden md:block"></span>
+                    <button onclick="logout()" class="bg-white/20 hover:bg-white/30 px-2 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base">
+                        <span class="md:hidden">🚪</span>
+                        <span class="hidden md:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center max-w-3xl mx-auto">
+                <h2 class="text-4xl font-bold mb-4">Find Trusted Local Services Instantly</h2>
+                <p class="text-xl opacity-90 mb-8">Connect with verified professionals in your area. From plumbers to tutors, we've got you covered.</p>
+                
+                <!-- Search Bar -->
+                <div class="relative max-w-2xl mx-auto">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="What service do you need? (e.g., 'Math tutor for Class 10', 'AC repair urgent')"
+                        class="search-input w-full px-6 py-4 text-gray-800 rounded-xl border-0 focus:outline-none text-lg"
+                    >
+                    <button 
+                        onclick="searchServices()"
+                        class="absolute right-2 top-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
+                    >
+                        Find Services
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Categories -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <h3 class="text-2xl font-bold text-center mb-8 text-gray-800">Popular Services</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('plumber')">
+                    <div class="text-2xl md:text-3xl mb-2">🔧</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Plumber</div>
+                </div>
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('electrician')">
+                    <div class="text-2xl md:text-3xl mb-2">⚡</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Electrician</div>
+                </div>
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('tutor')">
+                    <div class="text-2xl md:text-3xl mb-2">📚</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Tutor</div>
+                </div>
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('vet')">
+                    <div class="text-2xl md:text-3xl mb-2">🐕</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Pet Doctor</div>
+                </div>
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('cleaner')">
+                    <div class="text-2xl md:text-3xl mb-2">🧹</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Cleaner</div>
+                </div>
+                <div class="category-card text-center p-3 md:p-4 rounded-xl bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105" onclick="quickSearch('delivery')">
+                    <div class="text-2xl md:text-3xl mb-2">🥛</div>
+                    <div class="font-medium text-gray-700 text-sm md:text-base">Delivery</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Results -->
+    <section id="resultsSection" class="py-12 bg-gray-50 hidden">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-2xl font-bold text-gray-800">Available Services</h3>
+                <div class="flex items-center space-x-2 md:space-x-4 flex-wrap">
+                    <select onchange="sortResults(this.value)" class="px-2 md:px-4 py-2 border rounded-lg text-sm md:text-base">
+                        <option value="rating">Sort by Rating</option>
+                        <option value="distance">Sort by Distance</option>
+                        <option value="price">Sort by Price</option>
+                    </select>
+                    <button onclick="showFilters()" class="icon-btn px-2 md:px-4 py-2 border rounded-lg hover:bg-gray-100 transition-colors text-sm md:text-base">
+                        <span class="text-lg mr-1">🔍</span>
+                        <span class="hidden md:inline">Filters</span>
+                    </button>
+                    <button onclick="toggleMapView()" class="icon-btn px-2 md:px-4 py-2 border rounded-lg hover:bg-gray-100 transition-colors text-sm md:text-base">
+                        <span class="text-lg mr-1">🗺️</span>
+                        <span class="hidden md:inline">Map</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="serviceResults" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Profiles Section -->
+    <section id="businessProfilesSection" class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-gray-800 mb-4">Featured Business Profiles</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto">Discover trusted local businesses and learn more about their services, experience, and customer reviews.</p>
+            </div>
+            
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-2 bg-gray-100 p-1 rounded-lg">
+                    <button onclick="filterProfiles('all')" class="profile-filter-btn active px-4 py-2 rounded-md transition-colors">All</button>
+                    <button onclick="filterProfiles('plumber')" class="profile-filter-btn px-4 py-2 rounded-md transition-colors">Plumbers</button>
+                    <button onclick="filterProfiles('electrician')" class="profile-filter-btn px-4 py-2 rounded-md transition-colors">Electricians</button>
+                    <button onclick="filterProfiles('tutor')" class="profile-filter-btn px-4 py-2 rounded-md transition-colors">Tutors</button>
+                    <button onclick="filterProfiles('vet')" class="profile-filter-btn px-4 py-2 rounded-md transition-colors">Pet Care</button>
+                    <button onclick="filterProfiles('cleaner')" class="profile-filter-btn px-4 py-2 rounded-md transition-colors">Cleaners</button>
+                </div>
+            </div>
+            
+            <div id="businessProfilesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Business profiles will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center mb-12 text-gray-800">Why Choose LocalConnect?</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">✅</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Verified Providers</h4>
+                    <p class="text-gray-600">All service providers are background-checked and verified for your safety and peace of mind.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">⚡</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Instant Matching</h4>
+                    <p class="text-gray-600">Get matched with available providers in seconds, not hours. Emergency services available 24/7.</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">💰</span>
+                    </div>
+                    <h4 class="text-xl font-semibold mb-3">Transparent Pricing</h4>
+                    <p class="text-gray-600">See upfront pricing with no hidden fees. Compare quotes and choose what works for your budget.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-3 mb-4">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <span class="text-lg">🔗</span>
+                </div>
+                <span class="text-xl font-bold">LocalConnect</span>
+            </div>
+            <p class="text-gray-400">Connecting communities with trusted local services</p>
+        </div>
+    </footer>
+    </div> <!-- End Main App -->
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentProvider = null;
+        let registeredProviders = [];
+        let bookingRequests = [];
+        let providerBookings = [];
+        let businessProfiles = [];
+        let currentModal = null;
+
+        // Universal close modal function
+        function closeCurrentModal() {
+            if (currentModal && currentModal.parentNode) {
+                document.body.removeChild(currentModal);
+                currentModal = null;
+            }
+        }
+
+        // Universal close function for backward compatibility
+        window.closeModal = closeCurrentModal;
+        window.closeBusinessProfileModal = closeCurrentModal;
+        window.closeAvailabilityModal = closeCurrentModal;
+        window.closeEarningsModal = closeCurrentModal;
+
+        // Login form handling
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            const phone = document.getElementById('userPhone').value;
+            const location = document.getElementById('userLocation').value;
+            
+            // Store user data
+            currentUser = { name, email, phone, location };
+            
+            // Show main app and hide login
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Update greeting
+            document.getElementById('userGreeting').textContent = `Hello, ${name.split(' ')[0]}! 📍 ${location}`;
+            
+            // Initialize business profiles display
+            initializeBusinessProfiles();
+        });
+
+        // Provider registration form handling
+        document.getElementById('providerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const providerData = {
+                id: Date.now(), // Simple ID generation
+                name: document.getElementById('businessName').value,
+                ownerName: document.getElementById('providerName').value,
+                email: document.getElementById('providerEmail').value,
+                phone: document.getElementById('providerPhone').value,
+                category: document.getElementById('serviceCategory').value,
+                location: document.getElementById('providerLocation').value,
+                experience: document.getElementById('experience').value,
+                hourlyRate: document.getElementById('hourlyRate').value,
+                specialties: document.getElementById('specialties').value.split(',').map(s => s.trim()),
+                availability: document.getElementById('availability').value,
+                rating: (4.0 + Math.random() * 1).toFixed(1),
+                reviews: Math.floor(Math.random() * 200) + 10,
+                distance: (Math.random() * 3).toFixed(1) + ' km',
+                totalBookings: 0,
+                monthlyEarnings: 0,
+                joinDate: new Date().toISOString()
+            };
+            
+            // Store current provider
+            currentProvider = providerData;
+            registeredProviders.push(providerData);
+            
+            // Add to service providers database
+            if (!serviceProviders[providerData.category]) {
+                serviceProviders[providerData.category] = [];
+            }
+            
+            serviceProviders[providerData.category].push({
+                id: providerData.id,
+                name: providerData.name,
+                rating: parseFloat(providerData.rating),
+                reviews: providerData.reviews,
+                distance: providerData.distance,
+                price: `₹${providerData.hourlyRate}/hour`,
+                availability: providerData.availability,
+                specialties: providerData.specialties,
+                phone: providerData.phone
+            });
+
+            // Create business profile
+            const businessProfile = {
+                ...providerData,
+                description: `Professional ${providerData.category} service with ${providerData.experience} years of experience.`,
+                gallery: [],
+                testimonials: [],
+                workingHours: "9 AM - 6 PM",
+                serviceArea: providerData.location,
+                certifications: [],
+                socialMedia: {}
+            };
+            businessProfiles.push(businessProfile);
+            
+            // Show provider dashboard
+            document.getElementById('providerRegistrationPage').classList.add('hidden');
+            document.getElementById('providerDashboard').classList.remove('hidden');
+            
+            // Initialize provider dashboard
+            initializeProviderDashboard();
+            
+            // Reset form
+            document.getElementById('providerForm').reset();
+        });
+
+        // Initialize provider dashboard
+        function initializeProviderDashboard() {
+            if (!currentProvider) return;
+            
+            // Update welcome message
+            document.getElementById('providerWelcome').textContent = `Welcome back, ${currentProvider.ownerName}`;
+            
+            // Update stats
+            document.getElementById('totalBookings').textContent = currentProvider.totalBookings;
+            document.getElementById('pendingRequests').textContent = bookingRequests.filter(req => req.providerId === currentProvider.id && req.status === 'pending').length;
+            document.getElementById('monthlyEarnings').textContent = `₹${currentProvider.monthlyEarnings}`;
+            document.getElementById('providerRating').textContent = currentProvider.rating;
+            
+            // Update profile summary
+            document.getElementById('profileSummary').innerHTML = `
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Business:</span>
+                    <span class="font-medium">${currentProvider.name}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Category:</span>
+                    <span class="font-medium capitalize">${currentProvider.category}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Location:</span>
+                    <span class="font-medium">${currentProvider.location}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Rate:</span>
+                    <span class="font-medium">₹${currentProvider.hourlyRate}/hour</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Experience:</span>
+                    <span class="font-medium">${currentProvider.experience} years</span>
+                </div>
+            `;
+            
+            // Update booking requests
+            updateBookingRequestsDisplay();
+        }
+
+        // Update booking requests display
+        function updateBookingRequestsDisplay() {
+            const providerRequests = bookingRequests.filter(req => req.providerId === currentProvider.id);
+            const bookingRequestsDiv = document.getElementById('bookingRequests');
+            
+            if (providerRequests.length === 0) {
+                bookingRequestsDiv.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-4xl mb-2">📋</div>
+                        <p>No booking requests yet</p>
+                    </div>
+                `;
+            } else {
+                bookingRequestsDiv.innerHTML = providerRequests.map(request => `
+                    <div class="border-b pb-4 mb-4 last:border-b-0">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${request.customerName}</h4>
+                                <p class="text-sm text-gray-600">${request.service}</p>
+                                <p class="text-xs text-gray-500">${request.date}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full ${
+                                request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800'
+                            }">
+                                ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-700 mb-3">${request.description}</p>
+                        <div class="text-sm text-gray-600 mb-3">
+                            <p>📍 ${request.location}</p>
+                            <p>📞 ${request.phone}</p>
+                            <p>💰 Estimated: ₹${request.estimatedCost}</p>
+                        </div>
+                        ${request.status === 'pending' ? `
+                            <div class="flex space-x-2">
+                                <button onclick="acceptBooking(${request.id})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                                    Accept
+                                </button>
+                                <button onclick="declineBooking(${request.id})" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                                    Decline
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+            
+            // Update notification badge
+            const pendingCount = providerRequests.filter(req => req.status === 'pending').length;
+            const badge = document.getElementById('notificationBadge');
+            if (pendingCount > 0) {
+                badge.textContent = pendingCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Accept booking
+        function acceptBooking(requestId) {
+            const request = bookingRequests.find(req => req.id === requestId);
+            if (request) {
+                request.status = 'accepted';
+                currentProvider.totalBookings++;
+                currentProvider.monthlyEarnings += parseInt(request.estimatedCost);
+                
+                // Update displays
+                initializeProviderDashboard();
+                
+                alert(`Booking accepted! Customer ${request.customerName} has been notified. Please contact them at ${request.phone} to confirm details.`);
+            }
+        }
+
+        // Decline booking
+        function declineBooking(requestId) {
+            const request = bookingRequests.find(req => req.id === requestId);
+            if (request) {
+                request.status = 'declined';
+                updateBookingRequestsDisplay();
+                alert('Booking declined. The customer will be notified and can look for other providers.');
+            }
+        }
+
+        // Navigation functions
+        function showProviderRegistration() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('providerRegistrationPage').classList.remove('hidden');
+        }
+
+        function showCustomerLogin() {
+            document.getElementById('providerRegistrationPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        // Logout functions
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        function providerLogout() {
+            currentProvider = null;
+            document.getElementById('providerDashboard').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        // Provider dashboard functions
+        function editProfile() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-md mx-4">
+                    <h3 class="text-xl font-bold mb-6">Edit Profile</h3>
+                    <form id="editProfileForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                            <input type="text" id="editBusinessName" value="${currentProvider.name}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate (₹)</label>
+                            <input type="number" id="editHourlyRate" value="${currentProvider.hourlyRate}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Specialties (comma separated)</label>
+                            <input type="text" id="editSpecialties" value="${currentProvider.specialties.join(', ')}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" id="editPhone" value="${currentProvider.phone}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Service Area</label>
+                            <input type="text" id="editLocation" value="${currentProvider.location}" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex space-x-3 pt-4">
+                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Save Changes
+                            </button>
+                            <button type="button" onclick="closeCurrentModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Update provider data
+                currentProvider.name = document.getElementById('editBusinessName').value;
+                currentProvider.hourlyRate = document.getElementById('editHourlyRate').value;
+                currentProvider.specialties = document.getElementById('editSpecialties').value.split(',').map(s => s.trim());
+                currentProvider.phone = document.getElementById('editPhone').value;
+                currentProvider.location = document.getElementById('editLocation').value;
+                
+                // Update in service providers database
+                Object.keys(serviceProviders).forEach(category => {
+                    const providerIndex = serviceProviders[category].findIndex(p => p.id === currentProvider.id);
+                    if (providerIndex !== -1) {
+                        serviceProviders[category][providerIndex].name = currentProvider.name;
+                        serviceProviders[category][providerIndex].price = `₹${currentProvider.hourlyRate}/hour`;
+                        serviceProviders[category][providerIndex].specialties = currentProvider.specialties;
+                        serviceProviders[category][providerIndex].phone = currentProvider.phone;
+                    }
+                });
+                
+                closeModal();
+                initializeProviderDashboard();
+                alert('Profile updated successfully!');
+            });
+            
+            window.closeModal = function() {
+                if (modal && modal.parentNode) {
+                    document.body.removeChild(modal);
+                    currentModal = null;
+                }
+            };
+        }
+
+        function updateAvailability() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-md mx-4">
+                    <h3 class="text-xl font-bold mb-6">Update Availability</h3>
+                    <form id="availabilityForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Status</label>
+                            <select id="availabilityStatus" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Available now" ${currentProvider.availability === 'Available now' ? 'selected' : ''}>Available now</option>
+                                <option value="Available today" ${currentProvider.availability === 'Available today' ? 'selected' : ''}>Available today</option>
+                                <option value="Available tomorrow" ${currentProvider.availability === 'Available tomorrow' ? 'selected' : ''}>Available tomorrow</option>
+                                <option value="Available this week" ${currentProvider.availability === 'Available this week' ? 'selected' : ''}>Available this week</option>
+                                <option value="By appointment" ${currentProvider.availability === 'By appointment' ? 'selected' : ''}>By appointment only</option>
+                                <option value="Currently unavailable" ${currentProvider.availability === 'Currently unavailable' ? 'selected' : ''}>Currently unavailable</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Working Hours</label>
+                            <input type="text" id="workingHours" placeholder="e.g., 9 AM - 6 PM" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Special Notes</label>
+                            <textarea id="availabilityNotes" placeholder="Any special availability notes..." class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-20"></textarea>
+                        </div>
+                        <div class="flex space-x-3 pt-4">
+                            <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Update Availability
+                            </button>
+                            <button type="button" onclick="closeCurrentModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            document.getElementById('availabilityForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newStatus = document.getElementById('availabilityStatus').value;
+                const workingHours = document.getElementById('workingHours').value;
+                const notes = document.getElementById('availabilityNotes').value;
+                
+                currentProvider.availability = newStatus;
+                if (workingHours) currentProvider.workingHours = workingHours;
+                if (notes) currentProvider.availabilityNotes = notes;
+                
+                // Update in service providers database
+                Object.keys(serviceProviders).forEach(category => {
+                    const providerIndex = serviceProviders[category].findIndex(p => p.id === currentProvider.id);
+                    if (providerIndex !== -1) {
+                        serviceProviders[category][providerIndex].availability = newStatus;
+                    }
+                });
+                
+                document.body.removeChild(modal);
+                initializeProviderDashboard();
+                alert('Availability updated successfully! Customers will see your new status.');
+            });
+            
+            window.closeAvailabilityModal = function() {
+                if (modal && modal.parentNode) {
+                    document.body.removeChild(modal);
+                }
+            };
+        }
+
+        function viewEarnings() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            
+            // Calculate detailed earnings
+            const completedBookings = bookingRequests.filter(req => req.providerId === currentProvider.id && req.status === 'accepted');
+            const thisMonthEarnings = currentProvider.monthlyEarnings;
+            const avgPerBooking = currentProvider.totalBookings > 0 ? Math.round(thisMonthEarnings / currentProvider.totalBookings) : 0;
+            const projectedMonthly = avgPerBooking * (currentProvider.totalBookings + bookingRequests.filter(req => req.providerId === currentProvider.id && req.status === 'pending').length);
+            
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-2xl mx-4">
+                    <h3 class="text-xl font-bold mb-6">Earnings Dashboard</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800 mb-2">This Month</h4>
+                            <p class="text-2xl font-bold text-green-600">₹${thisMonthEarnings}</p>
+                            <p class="text-sm text-green-700">${currentProvider.totalBookings} completed bookings</p>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2">Average per Booking</h4>
+                            <p class="text-2xl font-bold text-blue-600">₹${avgPerBooking}</p>
+                            <p class="text-sm text-blue-700">Based on completed jobs</p>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-purple-800 mb-2">Projected Monthly</h4>
+                            <p class="text-2xl font-bold text-purple-600">₹${projectedMonthly}</p>
+                            <p class="text-sm text-purple-700">Including pending requests</p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800 mb-2">Success Rate</h4>
+                            <p class="text-2xl font-bold text-yellow-600">${currentProvider.totalBookings > 0 ? Math.round((currentProvider.totalBookings / (currentProvider.totalBookings + 2)) * 100) : 0}%</p>
+                            <p class="text-sm text-yellow-700">Booking acceptance rate</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-3">Recent Earnings</h4>
+                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                            ${completedBookings.length > 0 ? completedBookings.slice(-5).map(booking => `
+                                <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <div>
+                                        <p class="font-medium">${booking.customerName}</p>
+                                        <p class="text-sm text-gray-600">${booking.date}</p>
+                                    </div>
+                                    <p class="font-semibold text-green-600">₹${booking.estimatedCost}</p>
+                                </div>
+                            `).join('') : '<p class="text-gray-500 text-center py-4">No completed bookings yet</p>'}
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="downloadEarningsReport()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                            Download Report
+                        </button>
+                        <button onclick="closeEarningsModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.downloadEarningsReport = function() {
+                alert('Earnings report downloaded! Check your downloads folder for the detailed PDF report.');
+            };
+            
+            window.closeEarningsModal = function() {
+                if (modal && modal.parentNode) {
+                    document.body.removeChild(modal);
+                }
+            };
+        }
+
+        function manageServices() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-2xl mx-4">
+                    <h3 class="text-xl font-bold mb-6">Manage Services</h3>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-3">Current Services</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium capitalize">${currentProvider.category}</p>
+                                    <p class="text-sm text-gray-600">₹${currentProvider.hourlyRate}/hour</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="editServiceRate()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Edit Rate
+                                    </button>
+                                    <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Active
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-3">Service Specialties</h4>
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${currentProvider.specialties.map(specialty => `
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm flex items-center">
+                                    ${specialty}
+                                    <button onclick="removeSpecialty('${specialty}')" class="ml-2 text-blue-500 hover:text-blue-700">×</button>
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div class="flex space-x-2">
+                            <input type="text" id="newSpecialty" placeholder="Add new specialty..." class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button onclick="addSpecialty()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h4 class="font-semibold mb-3">Service Settings</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="mr-2">
+                                <span>Accept emergency bookings</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" checked class="mr-2">
+                                <span>Allow same-day bookings</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                <span>Offer free consultation</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3">
+                        <button onclick="saveServiceSettings()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
+                            Save Changes
+                        </button>
+                        <button onclick="closeEarningsModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.editServiceRate = function() {
+                const newRate = prompt('Enter new hourly rate (₹):', currentProvider.hourlyRate);
+                if (newRate && !isNaN(newRate)) {
+                    currentProvider.hourlyRate = newRate;
+                    
+                    // Update in service providers database
+                    Object.keys(serviceProviders).forEach(category => {
+                        const providerIndex = serviceProviders[category].findIndex(p => p.id === currentProvider.id);
+                        if (providerIndex !== -1) {
+                            serviceProviders[category][providerIndex].price = `₹${newRate}/hour`;
+                        }
+                    });
+                    
+                    alert('Service rate updated successfully!');
+                    closeModal();
+                    manageServices(); // Refresh the modal
+                }
+            };
+            
+            window.addSpecialty = function() {
+                const newSpecialty = document.getElementById('newSpecialty').value.trim();
+                if (newSpecialty && !currentProvider.specialties.includes(newSpecialty)) {
+                    currentProvider.specialties.push(newSpecialty);
+                    document.getElementById('newSpecialty').value = '';
+                    closeModal();
+                    manageServices(); // Refresh the modal
+                }
+            };
+            
+            window.removeSpecialty = function(specialty) {
+                currentProvider.specialties = currentProvider.specialties.filter(s => s !== specialty);
+                closeModal();
+                manageServices(); // Refresh the modal
+            };
+            
+            window.saveServiceSettings = function() {
+                alert('Service settings saved successfully!');
+                closeModal();
+                initializeProviderDashboard();
+            };
+        }
+
+        // Business Profile Management
+        function manageBusinessProfile() {
+            const profile = businessProfiles.find(p => p.id === currentProvider.id) || {
+                description: '',
+                gallery: [],
+                testimonials: [],
+                workingHours: '9 AM - 6 PM',
+                serviceArea: currentProvider.location,
+                certifications: [],
+                socialMedia: {}
+            };
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-8 w-full max-w-4xl mx-4 my-8">
+                    <h3 class="text-2xl font-bold mb-6">Manage Business Profile</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Business Description</label>
+                                <textarea id="businessDescription" placeholder="Tell customers about your business, experience, and what makes you special..." class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-32">${profile.description}</textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Working Hours</label>
+                                <input type="text" id="workingHours" value="${profile.workingHours}" placeholder="e.g., 9 AM - 6 PM, Mon-Sat" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Service Area</label>
+                                <input type="text" id="serviceArea" value="${profile.serviceArea}" placeholder="Areas where you provide services" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Certifications & Licenses</label>
+                                <input type="text" id="certifications" value="${profile.certifications.join(', ')}" placeholder="e.g., Licensed Plumber, Certified Electrician" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Business Highlights</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" id="highlight24x7"> 24/7 Emergency Service
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" id="highlightFreeQuote"> Free Quotes
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" id="highlightInsured"> Fully Insured
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" class="mr-2" id="highlightWarranty"> Work Warranty
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Contact Information</label>
+                                <div class="space-y-2">
+                                    <input type="email" id="businessEmail" value="${currentProvider.email}" placeholder="Business email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <input type="url" id="website" placeholder="Website URL (optional)" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Add Customer Testimonial</label>
+                                <div class="space-y-2">
+                                    <input type="text" id="testimonialName" placeholder="Customer name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <textarea id="testimonialText" placeholder="What did they say about your service?" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-20"></textarea>
+                                    <button onclick="addTestimonial()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                        Add Testimonial
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 border-t pt-6">
+                        <h4 class="font-semibold mb-4">Current Testimonials</h4>
+                        <div id="currentTestimonials" class="space-y-3 max-h-40 overflow-y-auto">
+                            ${profile.testimonials.map((testimonial, index) => `
+                                <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-start">
+                                    <div>
+                                        <p class="text-sm">"${testimonial.text}"</p>
+                                        <p class="text-xs text-gray-600 mt-1">- ${testimonial.name}</p>
+                                    </div>
+                                    <button onclick="removeTestimonial(${index})" class="text-red-500 hover:text-red-700 ml-2">×</button>
+                                </div>
+                            `).join('') || '<p class="text-gray-500 text-center py-4">No testimonials yet</p>'}
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 mt-8">
+                        <button onclick="saveBusinessProfile()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition-colors font-semibold">
+                            Save Profile
+                        </button>
+                        <button onclick="previewProfile()" class="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors">
+                            Preview
+                        </button>
+                        <button onclick="closeCurrentModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-3 px-6 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.addTestimonial = function() {
+                const name = document.getElementById('testimonialName').value.trim();
+                const text = document.getElementById('testimonialText').value.trim();
+                
+                if (name && text) {
+                    if (!profile.testimonials) profile.testimonials = [];
+                    profile.testimonials.push({ name, text });
+                    document.getElementById('testimonialName').value = '';
+                    document.getElementById('testimonialText').value = '';
+                    
+                    // Refresh testimonials display
+                    document.getElementById('currentTestimonials').innerHTML = profile.testimonials.map((testimonial, index) => `
+                        <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-start">
+                            <div>
+                                <p class="text-sm">"${testimonial.text}"</p>
+                                <p class="text-xs text-gray-600 mt-1">- ${testimonial.name}</p>
+                            </div>
+                            <button onclick="removeTestimonial(${index})" class="text-red-500 hover:text-red-700 ml-2">×</button>
+                        </div>
+                    `).join('');
+                }
+            };
+            
+            window.removeTestimonial = function(index) {
+                profile.testimonials.splice(index, 1);
+                document.getElementById('currentTestimonials').innerHTML = profile.testimonials.map((testimonial, idx) => `
+                    <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-start">
+                        <div>
+                            <p class="text-sm">"${testimonial.text}"</p>
+                            <p class="text-xs text-gray-600 mt-1">- ${testimonial.name}</p>
+                        </div>
+                        <button onclick="removeTestimonial(${idx})" class="text-red-500 hover:text-red-700 ml-2">×</button>
+                    </div>
+                `).join('') || '<p class="text-gray-500 text-center py-4">No testimonials yet</p>';
+            };
+            
+            window.saveBusinessProfile = function() {
+                const updatedProfile = {
+                    ...currentProvider,
+                    description: document.getElementById('businessDescription').value,
+                    workingHours: document.getElementById('workingHours').value,
+                    serviceArea: document.getElementById('serviceArea').value,
+                    certifications: document.getElementById('certifications').value.split(',').map(c => c.trim()).filter(c => c),
+                    testimonials: profile.testimonials,
+                    highlights: {
+                        emergency24x7: document.getElementById('highlight24x7').checked,
+                        freeQuote: document.getElementById('highlightFreeQuote').checked,
+                        insured: document.getElementById('highlightInsured').checked,
+                        warranty: document.getElementById('highlightWarranty').checked
+                    },
+                    businessEmail: document.getElementById('businessEmail').value,
+                    website: document.getElementById('website').value
+                };
+                
+                // Update or add profile
+                const existingIndex = businessProfiles.findIndex(p => p.id === currentProvider.id);
+                if (existingIndex !== -1) {
+                    businessProfiles[existingIndex] = updatedProfile;
+                } else {
+                    businessProfiles.push(updatedProfile);
+                }
+                
+                closeCurrentModal();
+                alert('Business profile saved successfully! Customers can now view your detailed profile.');
+                initializeBusinessProfiles();
+            };
+            
+            window.previewProfile = function() {
+                const tempProfile = {
+                    ...currentProvider,
+                    description: document.getElementById('businessDescription').value,
+                    workingHours: document.getElementById('workingHours').value,
+                    serviceArea: document.getElementById('serviceArea').value,
+                    testimonials: profile.testimonials,
+                    highlights: {
+                        emergency24x7: document.getElementById('highlight24x7').checked,
+                        freeQuote: document.getElementById('highlightFreeQuote').checked,
+                        insured: document.getElementById('highlightInsured').checked,
+                        warranty: document.getElementById('highlightWarranty').checked
+                    }
+                };
+                viewBusinessProfile(tempProfile);
+            };
+        }
+
+        // Initialize business profiles display
+        function initializeBusinessProfiles() {
+            // Add some sample profiles for demonstration
+            if (businessProfiles.length === 0) {
+                const sampleProfiles = [
+                    {
+                        id: 101,
+                        name: "Mike's Expert Plumbing",
+                        ownerName: "Mike Johnson",
+                        category: "plumber",
+                        rating: 4.8,
+                        reviews: 127,
+                        experience: 8,
+                        hourlyRate: 300,
+                        location: "Downtown Area",
+                        description: "Professional plumbing services with 8+ years of experience. Specializing in emergency repairs, pipe installations, and bathroom renovations. Available 24/7 for urgent issues.",
+                        specialties: ["Emergency repairs", "Pipe installation", "Bathroom renovation"],
+                        workingHours: "24/7 Emergency Service",
+                        serviceArea: "Downtown, Central City, Suburbs",
+                        certifications: ["Licensed Plumber", "Emergency Response Certified"],
+                        testimonials: [
+                            { name: "Sarah K.", text: "Fixed my burst pipe at midnight! Professional and quick service." },
+                            { name: "David M.", text: "Excellent work on bathroom renovation. Highly recommended!" }
+                        ],
+                        highlights: { emergency24x7: true, freeQuote: true, insured: true, warranty: true }
+                    },
+                    {
+                        id: 102,
+                        name: "PowerPro Electrical Solutions",
+                        ownerName: "Raj Patel",
+                        category: "electrician",
+                        rating: 4.9,
+                        reviews: 156,
+                        experience: 12,
+                        hourlyRate: 400,
+                        location: "Tech District",
+                        description: "Certified electrical contractor with over 12 years of experience. Expert in residential and commercial electrical work, smart home installations, and energy-efficient solutions.",
+                        specialties: ["Smart home setup", "AC installation", "Electrical safety audits"],
+                        workingHours: "8 AM - 8 PM, Mon-Sat",
+                        serviceArea: "Tech District, Business Park, Residential Areas",
+                        certifications: ["Master Electrician License", "Smart Home Certified"],
+                        testimonials: [
+                            { name: "Priya S.", text: "Installed our entire smart home system perfectly!" },
+                            { name: "John D.", text: "Very knowledgeable and professional. Great work!" }
+                        ],
+                        highlights: { emergency24x7: false, freeQuote: true, insured: true, warranty: true }
+                    }
+                ];
+                businessProfiles.push(...sampleProfiles);
+            }
+            
+            displayBusinessProfiles('all');
+        }
+
+        // Display business profiles
+        function displayBusinessProfiles(category) {
+            const grid = document.getElementById('businessProfilesGrid');
+            let profilesToShow = businessProfiles;
+            
+            if (category !== 'all') {
+                profilesToShow = businessProfiles.filter(profile => profile.category === category);
+            }
+            
+            if (profilesToShow.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🏢</div>
+                        <h3 class="text-xl font-semibold mb-2">No business profiles yet</h3>
+                        <p class="text-gray-600">Be the first to create a detailed business profile!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = profilesToShow.map(profile => `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-800">${profile.name}</h4>
+                                <p class="text-gray-600 capitalize">${profile.category} • ${profile.experience} years exp.</p>
+                                <div class="flex items-center mt-2">
+                                    <span class="text-yellow-500">★</span>
+                                    <span class="ml-1 font-medium">${profile.rating}</span>
+                                    <span class="text-gray-500 ml-1">(${profile.reviews} reviews)</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-green-600">₹${profile.hourlyRate}/hour</div>
+                                <div class="text-sm text-gray-500">${profile.location}</div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-700 text-sm mb-4 line-clamp-3">${profile.description}</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            ${profile.specialties.slice(0, 3).map(specialty => 
+                                `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">${specialty}</span>`
+                            ).join('')}
+                            ${profile.specialties.length > 3 ? `<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">+${profile.specialties.length - 3} more</span>` : ''}
+                        </div>
+                        
+                        ${profile.highlights ? `
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${profile.highlights.emergency24x7 ? '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">🚨 24/7 Emergency</span>' : ''}
+                                ${profile.highlights.freeQuote ? '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">💰 Free Quote</span>' : ''}
+                                ${profile.highlights.insured ? '<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">🛡️ Insured</span>' : ''}
+                                ${profile.highlights.warranty ? '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">✅ Warranty</span>' : ''}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="viewBusinessProfile(${JSON.stringify(profile).replace(/"/g, '&quot;')})" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors font-medium">
+                                View Profile
+                            </button>
+                            <button onclick="bookService('${profile.name}', ${profile.id})" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter profiles
+        function filterProfiles(category) {
+            // Update active button
+            document.querySelectorAll('.profile-filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            displayBusinessProfiles(category);
+        }
+
+        // View detailed business profile
+        function viewBusinessProfile(profile) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl w-full max-w-4xl mx-4 my-8 max-h-screen overflow-y-auto">
+                    <div class="sticky top-0 bg-white border-b p-6">
+                        <button onclick="closeCurrentModal()" class="close-btn">×</button>
+                        <h2 class="text-2xl font-bold text-gray-800 pr-12">${profile.name}</h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="md:col-span-2 space-y-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">About Our Business</h3>
+                                    <p class="text-gray-700 leading-relaxed">${profile.description}</p>
+                                </div>
+                                
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-3">Our Specialties</h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${profile.specialties.map(specialty => 
+                                            `<span class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg">${specialty}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                                
+                                ${profile.certifications && profile.certifications.length > 0 ? `
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3">Certifications & Licenses</h3>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${profile.certifications.map(cert => 
+                                                `<span class="px-3 py-2 bg-green-100 text-green-700 rounded-lg flex items-center">
+                                                    <span class="mr-2">🏆</span>${cert}
+                                                </span>`
+                                            ).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${profile.testimonials && profile.testimonials.length > 0 ? `
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-3">Customer Testimonials</h3>
+                                        <div class="space-y-4">
+                                            ${profile.testimonials.map(testimonial => `
+                                                <div class="bg-gray-50 p-4 rounded-lg">
+                                                    <p class="text-gray-700 italic">"${testimonial.text}"</p>
+                                                    <p class="text-gray-600 text-sm mt-2">- ${testimonial.name}</p>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h3 class="font-semibold mb-3">Quick Info</h3>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <span class="w-6">⭐</span>
+                                            <span>${profile.rating} (${profile.reviews} reviews)</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-6">💰</span>
+                                            <span>₹${profile.hourlyRate}/hour</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-6">🕒</span>
+                                            <span>${profile.workingHours}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-6">📍</span>
+                                            <span>${profile.serviceArea || profile.location}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="w-6">🎯</span>
+                                            <span>${profile.experience} years experience</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                ${profile.highlights ? `
+                                    <div class="bg-blue-50 p-4 rounded-lg">
+                                        <h3 class="font-semibold mb-3">Service Highlights</h3>
+                                        <div class="space-y-2 text-sm">
+                                            ${profile.highlights.emergency24x7 ? '<div class="flex items-center"><span class="w-6">🚨</span><span>24/7 Emergency Service</span></div>' : ''}
+                                            ${profile.highlights.freeQuote ? '<div class="flex items-center"><span class="w-6">💰</span><span>Free Quotes</span></div>' : ''}
+                                            ${profile.highlights.insured ? '<div class="flex items-center"><span class="w-6">🛡️</span><span>Fully Insured</span></div>' : ''}
+                                            ${profile.highlights.warranty ? '<div class="flex items-center"><span class="w-6">✅</span><span>Work Warranty</span></div>' : ''}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="space-y-3">
+                                    <button onclick="bookService('${profile.name}', ${profile.id})" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors font-semibold">
+                                        Book Service Now
+                                    </button>
+                                    <button onclick="callProvider('${profile.phone}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors">
+                                        📞 Call Now
+                                    </button>
+                                    ${profile.businessEmail ? `
+                                        <button onclick="window.open('mailto:${profile.businessEmail}')" class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg transition-colors">
+                                            ✉️ Send Email
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            window.closeCurrentModal = function() {
+                if (modal && modal.parentNode) {
+                    document.body.removeChild(modal);
+                }
+            };
+        }
+
+        // Sample service providers database
+        const serviceProviders = {
+            plumber: [
+                {
+                    id: 1,
+                    name: "Mike's Plumbing Services",
+                    rating: 4.8,
+                    reviews: 127,
+                    distance: "0.8 km",
+                    price: "₹300/hour",
+                    availability: "Available now",
+                    specialties: ["Emergency repairs", "Pipe installation", "Leak fixing"],
+                    phone: "+91 98765 43210"
+                },
+                {
+                    id: 2,
+                    name: "QuickFix Plumbers",
+                    rating: 4.6,
+                    reviews: 89,
+                    distance: "1.2 km",
+                    price: "₹250/hour",
+                    availability: "Available in 30 mins",
+                    specialties: ["Bathroom fitting", "Water heater repair"],
+                    phone: "+91 98765 43211"
+                }
+            ],
+            electrician: [
+                {
+                    id: 3,
+                    name: "PowerPro Electricians",
+                    rating: 4.9,
+                    reviews: 156,
+                    distance: "0.5 km",
+                    price: "₹400/hour",
+                    availability: "Available now",
+                    specialties: ["Wiring", "AC installation", "Emergency repairs"],
+                    phone: "+91 98765 43212"
+                },
+                {
+                    id: 4,
+                    name: "Spark Electric Solutions",
+                    rating: 4.7,
+                    reviews: 203,
+                    distance: "1.8 km",
+                    price: "₹350/hour",
+                    availability: "Available in 1 hour",
+                    specialties: ["Home automation", "LED installation"],
+                    phone: "+91 98765 43213"
+                }
+            ],
+            tutor: [
+                {
+                    id: 5,
+                    name: "Priya Sharma - Math Expert",
+                    rating: 4.9,
+                    reviews: 78,
+                    distance: "2.1 km",
+                    price: "₹500/hour",
+                    availability: "Available today 6 PM",
+                    specialties: ["Class 10 Math", "Class 12 Math", "JEE Prep"],
+                    phone: "+91 98765 43214"
+                },
+                {
+                    id: 6,
+                    name: "Academic Excellence Center",
+                    rating: 4.8,
+                    reviews: 145,
+                    distance: "1.5 km",
+                    price: "₹600/hour",
+                    availability: "Available tomorrow",
+                    specialties: ["All subjects", "Exam preparation"],
+                    phone: "+91 98765 43215"
+                }
+            ],
+            vet: [
+                {
+                    id: 7,
+                    name: "Dr. Rajesh - Pet Care Clinic",
+                    rating: 4.9,
+                    reviews: 234,
+                    distance: "1.0 km",
+                    price: "₹800/visit",
+                    availability: "Available now",
+                    specialties: ["General checkup", "Vaccinations", "Emergency care"],
+                    phone: "+91 98765 43216"
+                }
+            ],
+            cleaner: [
+                {
+                    id: 8,
+                    name: "SparkleClean Services",
+                    rating: 4.7,
+                    reviews: 167,
+                    distance: "0.7 km",
+                    price: "₹200/hour",
+                    availability: "Available today",
+                    specialties: ["Deep cleaning", "Regular maintenance"],
+                    phone: "+91 98765 43217"
+                }
+            ],
+            delivery: [
+                {
+                    id: 9,
+                    name: "Fresh Dairy Direct",
+                    rating: 4.8,
+                    reviews: 89,
+                    distance: "0.3 km",
+                    price: "₹60/liter",
+                    availability: "Daily delivery available",
+                    specialties: ["Fresh milk", "Organic products"],
+                    phone: "+91 98765 43218"
+                }
+            ]
+        };
+
+        function searchServices() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            let results = [];
+            
+            // Simple keyword matching
+            Object.keys(serviceProviders).forEach(category => {
+                if (query.includes(category) || 
+                    (category === 'tutor' && (query.includes('math') || query.includes('class') || query.includes('teach'))) ||
+                    (category === 'vet' && (query.includes('pet') || query.includes('dog') || query.includes('cat'))) ||
+                    (category === 'plumber' && (query.includes('pipe') || query.includes('leak') || query.includes('water'))) ||
+                    (category === 'electrician' && (query.includes('electric') || query.includes('ac') || query.includes('wiring'))) ||
+                    (category === 'delivery' && (query.includes('milk') || query.includes('deliver')))) {
+                    results = results.concat(serviceProviders[category]);
+                }
+            });
+
+            // If no specific match, show all services
+            if (results.length === 0 && query.trim() !== '') {
+                results = Object.values(serviceProviders).flat();
+            }
+
+            displayResults(results, query);
+        }
+
+        function quickSearch(category) {
+            document.getElementById('searchInput').value = category;
+            const results = serviceProviders[category] || [];
+            displayResults(results, category);
+        }
+
+        function displayResults(results, query) {
+            const resultsSection = document.getElementById('resultsSection');
+            const serviceResults = document.getElementById('serviceResults');
+            
+            if (results.length === 0) {
+                serviceResults.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold mb-2">No services found</h3>
+                        <p class="text-gray-600">Try searching for plumber, electrician, tutor, or other services</p>
+                    </div>
+                `;
+            } else {
+                serviceResults.innerHTML = results.map(provider => `
+                    <div class="service-card bg-white rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h4 class="font-semibold text-lg text-gray-800">${provider.name}</h4>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-yellow-500">★</span>
+                                    <span class="ml-1 font-medium">${provider.rating}</span>
+                                    <span class="text-gray-500 ml-1">(${provider.reviews} reviews)</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold text-green-600">${provider.price}</div>
+                                <div class="text-sm text-gray-500">${provider.distance} away</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex items-center mb-2">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                <span class="text-sm font-medium text-green-700">${provider.availability}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-1">
+                                ${provider.specialties.map(specialty => 
+                                    `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">${specialty}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                            <button onclick="bookService('${provider.name}', ${provider.id})" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 md:px-4 rounded-lg transition-colors font-medium text-sm md:text-base">
+                                <span class="mr-1">📅</span>Book Now
+                            </button>
+                            <button onclick="callProvider('${provider.phone}')" class="px-3 md:px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm md:text-base">
+                                📞 <span class="hidden sm:inline">Call</span>
+                            </button>
+                            <button onclick="viewProviderDetails(${provider.id})" class="px-3 md:px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors text-sm md:text-base">
+                                👁️ <span class="hidden sm:inline">View</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function bookService(providerName, providerId) {
+            if (!currentUser) {
+                alert('Please login first to book services.');
+                return;
+            }
+
+            const description = prompt('Please describe your service requirement:');
+            if (!description) return;
+
+            const estimatedCost = Math.floor(Math.random() * 1000) + 200; // Random cost between 200-1200
+
+            const booking = {
+                id: Date.now(),
+                providerId: providerId,
+                providerName: providerName,
+                customerName: currentUser.name,
+                phone: currentUser.phone,
+                location: currentUser.location,
+                service: providerName,
+                description: description,
+                estimatedCost: estimatedCost,
+                date: new Date().toLocaleString(),
+                status: 'pending'
+            };
+
+            bookingRequests.push(booking);
+
+            alert(`Booking request sent to ${providerName}! They will contact you within 5 minutes to confirm the appointment. Estimated cost: ₹${estimatedCost}`);
+
+            // If the provider is currently logged in, update their dashboard
+            if (currentProvider && currentProvider.id === providerId) {
+                updateBookingRequestsDisplay();
+            }
+        }
+
+        function callProvider(phone) {
+            alert(`Calling ${phone}...`);
+        }
+
+        // Auto-search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchServices();
+            }
+        });
+
+        // Additional icon functions
+        function showNotifications() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">Notifications</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <p class="text-sm font-medium">Welcome to LocalConnect!</p>
+                            <p class="text-xs text-gray-600">Start exploring local services</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <p class="text-sm font-medium">🎉 Special Offer</p>
+                            <p class="text-xs text-gray-600">Get 20% off your first booking</p>
+                        </div>
+                    </div>
+                    <button onclick="clearNotifications()" class="w-full mt-4 bg-gray-100 hover:bg-gray-200 py-2 rounded-lg transition-colors">
+                        Clear All
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            window.closeModal = function() {
+                if (modal && modal.parentNode) {
+                    document.body.removeChild(modal);
+                    currentModal = null;
+                }
+            };
+            
+            window.clearNotifications = function() {
+                document.getElementById('userNotificationBadge').classList.add('hidden');
+                closeModal();
+            };
+        }
+
+        function showUserProfile() {
+            if (!currentUser) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">My Profile</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-xl">👤</span>
+                            </div>
+                            <div>
+                                <p class="font-medium">${currentUser.name}</p>
+                                <p class="text-sm text-gray-600">${currentUser.email}</p>
+                            </div>
+                        </div>
+                        <div class="border-t pt-3 space-y-2">
+                            <p class="text-sm"><span class="font-medium">Phone:</span> ${currentUser.phone}</p>
+                            <p class="text-sm"><span class="font-medium">Location:</span> ${currentUser.location}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 mt-4">
+                        <button onclick="editUserProfile()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                            Edit Profile
+                        </button>
+                        <button onclick="closeModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 py-2 rounded-lg transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showProviderNotifications() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">Provider Notifications</h3>
+                    </div>
+                    <div class="space-y-3">
+                        ${bookingRequests.filter(req => req.providerId === currentProvider?.id && req.status === 'pending').length > 0 ? 
+                            bookingRequests.filter(req => req.providerId === currentProvider.id && req.status === 'pending').map(req => `
+                                <div class="p-3 bg-orange-50 rounded-lg">
+                                    <p class="text-sm font-medium">New Booking Request</p>
+                                    <p class="text-xs text-gray-600">From ${req.customerName}</p>
+                                </div>
+                            `).join('') : 
+                            '<div class="p-3 bg-gray-50 rounded-lg"><p class="text-sm text-gray-600">No new notifications</p></div>'
+                        }
+                    </div>
+                    <button onclick="closeModal()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showProviderSettings() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">Settings</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-medium mb-2">Notification Settings</h4>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm">Email notifications</span>
+                            </label>
+                            <label class="flex items-center space-x-2 mt-1">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm">SMS notifications</span>
+                            </label>
+                        </div>
+                        <div>
+                            <h4 class="font-medium mb-2">Privacy Settings</h4>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm">Show phone number</span>
+                            </label>
+                            <label class="flex items-center space-x-2 mt-1">
+                                <input type="checkbox" checked class="rounded">
+                                <span class="text-sm">Show location</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 mt-6">
+                        <button onclick="saveSettings()" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors">
+                            Save
+                        </button>
+                        <button onclick="closeModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 py-2 rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            window.saveSettings = function() {
+                alert('Settings saved successfully!');
+                closeModal();
+            };
+        }
+
+        function showProviderHelp() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">Help & Support</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="showFAQ()" class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                            <span class="font-medium">❓ Frequently Asked Questions</span>
+                        </button>
+                        <button onclick="contactSupport()" class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                            <span class="font-medium">📞 Contact Support</span>
+                        </button>
+                        <button onclick="showTutorial()" class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                            <span class="font-medium">🎓 Platform Tutorial</span>
+                        </button>
+                        <button onclick="reportIssue()" class="w-full text-left p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                            <span class="font-medium">🐛 Report an Issue</span>
+                        </button>
+                    </div>
+                    <button onclick="closeModal()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                        Close
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showFilters() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            currentModal = modal;
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                    <button onclick="closeModal()" class="close-btn">×</button>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold">Filter Services</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Price Range</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>Any Price</option>
+                                <option>Under ₹200/hour</option>
+                                <option>₹200-500/hour</option>
+                                <option>₹500-1000/hour</option>
+                                <option>Above ₹1000/hour</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Distance</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>Any Distance</option>
+                                <option>Within 1 km</option>
+                                <option>Within 2 km</option>
+                                <option>Within 5 km</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Rating</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>Any Rating</option>
+                                <option>4.5+ Stars</option>
+                                <option>4.0+ Stars</option>
+                                <option>3.5+ Stars</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Availability</label>
+                            <div class="space-y-1">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded">
+                                    <span class="text-sm">Available now</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded">
+                                    <span class="text-sm">Available today</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="rounded">
+                                    <span class="text-sm">Emergency service</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 mt-6">
+                        <button onclick="applyFilters()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                            Apply Filters
+                        </button>
+                        <button onclick="clearFilters()" class="flex-1 bg-gray-100 hover:bg-gray-200 py-2 rounded-lg transition-colors">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            window.applyFilters = function() {
+                alert('Filters applied! Results updated.');
+                closeModal();
+            };
+            
+            window.clearFilters = function() {
+                alert('Filters cleared!');
+                closeModal();
+            };
+        }
+
+        function toggleMapView() {
+            alert('🗺️ Map view coming soon! This feature will show service providers on an interactive map.');
+        }
+
+        function sortResults(sortBy) {
+            alert(`Sorting results by ${sortBy}...`);
+            // Add actual sorting logic here
+        }
+
+        function viewProviderDetails(providerId) {
+            const provider = Object.values(serviceProviders).flat().find(p => p.id === providerId);
+            if (provider) {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-white rounded-xl p-6 w-full max-w-md mx-4 modal-content">
+                        <button onclick="closeModal()" class="close-btn">×</button>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-bold">${provider.name}</h3>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-2">
+                                <span>⭐</span>
+                                <span>${provider.rating} (${provider.reviews} reviews)</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span>💰</span>
+                                <span>${provider.price}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span>📍</span>
+                                <span>${provider.distance} away</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span>🕒</span>
+                                <span>${provider.availability}</span>
+                            </div>
+                            <div>
+                                <p class="font-medium mb-1">Specialties:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${provider.specialties.map(s => `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">${s}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 mt-6">
+                            <button onclick="bookService('${provider.name}', ${provider.id})" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors">
+                                Book Now
+                            </button>
+                            <button onclick="callProvider('${provider.phone}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                                Call
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+        }
+
+        // Helper functions for help section
+        function showFAQ() {
+            alert('📋 FAQ: Common questions about using LocalConnect platform will be displayed here.');
+        }
+
+        function contactSupport() {
+            alert('📞 Support: Call us at +91-1800-123-4567 or email support@localconnect.com');
+        }
+
+        function showTutorial() {
+            alert('🎓 Tutorial: Interactive guide on how to use LocalConnect will start here.');
+        }
+
+        function reportIssue() {
+            const issue = prompt('Please describe the issue you encountered:');
+            if (issue) {
+                alert('🐛 Issue reported successfully! Our team will look into it. Reference ID: #' + Math.random().toString(36).substr(2, 9).toUpperCase());
+            }
+        }
+
+        function editUserProfile() {
+            alert('✏️ Profile editing feature coming soon! You will be able to update your information here.');
+        }
+
+        // Initialize notification badges
+        function updateNotificationBadges() {
+            if (currentUser) {
+                const userBadge = document.getElementById('userNotificationBadge');
+                if (userBadge) {
+                    userBadge.textContent = '2';
+                    userBadge.classList.remove('hidden');
+                }
+            }
+        }
+
+        // Call this when user logs in
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            // ... existing login code ...
+            setTimeout(updateNotificationBadges, 1000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9787703512f44704',t:'MTc1Njc1NzcxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
