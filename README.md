@@ -1,1 +1,1 @@
-
+This is not just helpful for customers, it's also helpful for new business owners who want to connect with the customers of their areas to grow their business. In this, we have a separate interface for business owners to track their orders and maintain their profiles.
